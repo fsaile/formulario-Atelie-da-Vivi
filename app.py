@@ -26,7 +26,7 @@ def submit():
 
     return redirect('/thankyou')
 
-@app.route('/thankyou')c
+@app.route('/thankyou')
 def thankyou():
     return render_template('thankyou.html')
 
