@@ -1,9 +1,10 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash, url_for
 import csv
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'a9c8f5f2b2d23e43cfb8b1f1e5e5aefb'  # Substitua com uma chave secreta segura
 
 @app.route('/')
 def index():
@@ -11,10 +12,15 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    name = request.form['name']
-    email = request.form['email']
-    password = request.form['password']
+    name = request.form.get('name')
+    email = request.form.get('email')
+    password = request.form.get('password')
     
+    # Verificação básica dos dados
+    if not name or not email or not password:
+        flash('Por favor, preencha todos os campos!', 'error')
+        return redirect(url_for('index'))
+
     # Criptografia da senha ao salvar
     hashed_password = generate_password_hash(password)
 
@@ -28,7 +34,8 @@ def submit():
         writer = csv.writer(file)
         writer.writerow([name, email, hashed_password])
 
-    return redirect('/thankyou')
+    flash('Dados enviados com sucesso!', 'success')
+    return redirect(url_for('thankyou'))
 
 @app.route('/thankyou')
 def thankyou():
