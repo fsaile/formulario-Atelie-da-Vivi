@@ -6,6 +6,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = 'a9c8f5f2b2d23e43cfb8b1f1e5e5aefb'  # Substitua com uma chave secreta segura
 
+# Redirecionamento HTTP para HTTPS
+@app.before_request
+def before_request():
+    if request.headers.get('X-Forwarded-Proto') == 'http':
+        return redirect(request.url.replace('http://', 'https://'))
+
 # Dados de usuários para login (em um projeto real, use um banco de dados)
 users = {
     'admin@example.com': generate_password_hash('adminpassword')
